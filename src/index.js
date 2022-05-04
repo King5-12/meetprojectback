@@ -10,7 +10,7 @@ const server = require('http').createServer(app.callback())
 const io = require('socket.io')(server)
 
 const { log, INFO, ERROR } = require("./log");
-const { makeSensitiveMap, checkSensitiveWord, filterSensitiveWord } = require("./utils/dirty");
+const { makeSensitiveMap, filterSensitiveWord } = require("./utils/dirty");
 
 let dirtyMap = null
 
@@ -20,6 +20,7 @@ fs.readFile(path.join(__dirname, './utils/dirty.txt'), 'utf-8', function (err, d
         console.error(err);
         return
     }
+    console.log(data, 'dirtydata')
     const dirtyList = data.split("\r\n")
     dirtyMap = makeSensitiveMap(dirtyList)
 });
@@ -165,6 +166,7 @@ io.on(CONNECTION, socket => {
         const { data } = req;
         console.log(data.user, data.msg);
         const dirtyInfo = filterSensitiveWord(data.msg, dirtyMap)
+        console.log("dirtyInfo", dirtyInfo);
 
         if (dirtyInfo.flag) {
             data.msg = data.msg.replace(dirtyInfo.sensitiveWord, "*".repeat(dirtyInfo.sensitiveWord.length))
