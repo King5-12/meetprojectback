@@ -1,4 +1,6 @@
 const Koa = require('koa');
+const fs = require('fs')
+const path = require('path')
 
 const app = new Koa();
 const port = process.env.PORT || 8080;
@@ -8,6 +10,19 @@ const server = require('http').createServer(app.callback())
 const io = require('socket.io')(server)
 
 const { log, INFO, ERROR } = require("./log");
+const { makeSensitiveMap, checkSensitiveWord, filterSensitiveWord } = require("./utils/dirty");
+
+let dirtyMap = null
+
+
+fs.readFile(path.join(__dirname, './utils/dirty.txt'), 'utf-8', function (err, data) {
+    if (err) {
+        console.error(err);
+        return
+    }
+    const dirtyList = data.split("\r\n")
+    dirtyMap = makeSensitiveMap(dirtyList)
+});
 
 const { getUserByUsername, insertUser } = require("./database/sqlite3");
 
@@ -21,7 +36,7 @@ const {
     MSG,
 } = require("./socket-types");
 
-const { Response, NOTFOUND } = require("./utils/response");
+const { Response } = require("./utils/response");
 
 const userToSocket = new Map();
 const roomToUser = new Map();
@@ -149,6 +164,11 @@ io.on(CONNECTION, socket => {
     socket.on(MSG, (req) => {
         const { data } = req;
         console.log(data.user, data.msg);
+        const dirtyInfo = filterSensitiveWord(data.msg, dirtyMap)
+
+        if (dirtyInfo.flag) {
+            data.msg = data.msg.replace(dirtyInfo.sensitiveWord, "*".repeat(dirtyInfo.sensitiveWord.length))
+        }
         socket
             .to(room)
             .emit(MSG, Response(200, { ...data }, null));
