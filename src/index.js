@@ -22,6 +22,7 @@ fs.readFile(path.join(__dirname, './utils/dirty.txt'), 'utf-8', function (err, d
     }
     console.log(data, 'dirtydata')
     const dirtyList = data.split("\r\n")
+    console.log(dirtyList, 'dirtyList')
     dirtyMap = makeSensitiveMap(dirtyList)
 });
 
