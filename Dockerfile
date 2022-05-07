@@ -1,8 +1,8 @@
 FROM node
 
-COPY . /home/server/
-
 WORKDIR /home/server
+
+COPY . /home/server/
 
 RUN npm install 
 
