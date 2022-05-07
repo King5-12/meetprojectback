@@ -6,4 +6,4 @@ COPY . /home/server/
 
 RUN npm install 
 
-CMD npm start:prod
+CMD npm run start:prod
