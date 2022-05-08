@@ -53,7 +53,8 @@ const room = "room"
 io.on(CONNECTION, socket => {
     console.log("connection --->", socket.id);
     let username;
-
+    // 加入房间
+    socket.join(room);
     // 用户登录
     // 用户登录之后便会加入到一个特定的房间里
     // 我们需要保存该用户对应的socketid
@@ -79,8 +80,7 @@ io.on(CONNECTION, socket => {
                     // 赋值
                     username = username_;
 
-                    // 加入房间
-                    socket.join(room);
+
 
                     // 将用户加入到room中
                     if (roomToUser.has(room)) {
