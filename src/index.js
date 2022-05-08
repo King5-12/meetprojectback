@@ -49,6 +49,8 @@ const roomToUser = new Map();
 
 const room = "room"
 
+console.log("测试webhook打包")
+
 //监听connect事件
 io.on(CONNECTION, socket => {
     console.log("connection --->", socket.id);
